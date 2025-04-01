@@ -2,4 +2,4 @@
 source venv/bin/activate
 
 서버 실행
-uvicorn main:app --reload 
+uvicorn app.main:app --reload 
