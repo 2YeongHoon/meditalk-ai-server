@@ -5,7 +5,7 @@ from app.models.symptom_disease import SymptomDisease
 
 router = APIRouter()
 
-@router.post("/disease_info")
+@router.post("/mapped_chat")
 def get_disease_info(symptoms: list[str], db: Session = Depends(get_db)):
     results = []
     for symptom in symptoms:
