@@ -20,13 +20,13 @@ class ChatRequest(BaseModel):
 
 @router.post("/hello-chat")
 def generate_response(request: ChatRequest):
-    chat_prompt = f"""다음은 AI와 사용자 간의 대화입니다.
+    chat_prompt = f"""너는 AI고 나는 너의 친구 사용자야
 
     예시)
     사용자: 안녕?
     AI: 안녕하세요! 오늘 기분은 어떠신가요?
 
-    사용자: 헬로우~
+    사용자: {request}
     AI:"""
 
     inputs = tokenizer(chat_prompt, return_tensors="pt", padding=True)
@@ -92,9 +92,9 @@ def generate_response(request: ChatRequest):
     return {"response": response}
 
 @router.post("/v1/predict/disease-rag")
-def recommend_disease(req: ChatRequest, db: Session = Depends(get_db)) -> dict:
+def recommend_disease(request: ChatRequest, db: Session = Depends(get_db)) -> dict:
     # 1) 증상 키워드 분리
-    input_symptoms = [kw.strip() for kw in re.split(r"[ ,\.!?~\n]", req.prompt) if kw.strip()]
+    input_symptoms = [kw.strip() for kw in re.split(r"[ ,\.!?~\n]", request.prompt) if kw.strip()]
     print(input_symptoms);
 
     # 2) 조건 생성
@@ -117,7 +117,7 @@ def recommend_disease(req: ChatRequest, db: Session = Depends(get_db)) -> dict:
     너는 의학 전문가 AI야. 사용자 증상을 보고, 아래 후보 질병 중에서 가장 적절한 질병 하나만 골라줘.
 
     [사용자 증상]
-    {req.prompt}
+    {request.prompt}
 
     [질병 후보]
     {disease_str}
@@ -152,7 +152,7 @@ def recommend_disease(req: ChatRequest, db: Session = Depends(get_db)) -> dict:
         answer = result.strip()
 
     return {
-        "symptom": req.prompt,
+        "symptom": request.prompt,
         "candidate_diseases": candidate_diseases,
         "recommended_disease": answer,
     }
